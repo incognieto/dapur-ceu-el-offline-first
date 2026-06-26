@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Nastar toples">
+  <rect width="960" height="540" fill="#f5e2bc"/>
+  <rect x="0" y="330" width="960" height="210" fill="#9c6b4b"/>
+  <rect x="286" y="120" width="388" height="270" rx="44" fill="#d8eef0" opacity=".82"/>
+  <rect x="326" y="90" width="308" height="58" rx="18" fill="#b96b39"/>
+  <circle cx="390" cy="235" r="40" fill="#d99536"/>
+  <circle cx="480" cy="235" r="40" fill="#d99536"/>
+  <circle cx="570" cy="235" r="40" fill="#d99536"/>
+  <circle cx="435" cy="315" r="40" fill="#d99536"/>
+  <circle cx="525" cy="315" r="40" fill="#d99536"/>
+  <path d="M376 226c20-16 38-16 56 0" stroke="#f7d890" stroke-width="10" stroke-linecap="round"/>
+  <path d="M466 226c20-16 38-16 56 0" stroke="#f7d890" stroke-width="10" stroke-linecap="round"/>
+  <path d="M556 226c20-16 38-16 56 0" stroke="#f7d890" stroke-width="10" stroke-linecap="round"/>
+  <text x="480" y="475" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#553c28">Nastar Toples</text>
+</svg>
+

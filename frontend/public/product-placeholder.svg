@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Produk Dapur Ceu El">
+  <rect width="960" height="540" fill="#f7f2e8"/>
+  <circle cx="480" cy="245" r="130" fill="#c96f3d"/>
+  <path d="M380 256c60 58 140 58 200 0" fill="none" stroke="#fff8ef" stroke-width="24" stroke-linecap="round"/>
+  <text x="480" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#553c28">Dapur Ceu El</text>
+</svg>
+

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Bolu pandan">
+  <rect width="960" height="540" fill="#f7e8c4"/>
+  <rect x="0" y="310" width="960" height="230" fill="#d8b48c"/>
+  <ellipse cx="480" cy="310" rx="310" ry="86" fill="#7aa66a"/>
+  <path d="M210 300c40-120 500-120 540 0 20 64-68 120-270 120s-290-56-270-120z" fill="#9ac078"/>
+  <path d="M300 305c45-46 315-54 360 0" fill="none" stroke="#f7f2d8" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="384" cy="270" r="14" fill="#efe2bd"/>
+  <circle cx="565" cy="260" r="12" fill="#efe2bd"/>
+  <text x="480" y="475" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#553c28">Bolu Pandan</text>
+</svg>
+

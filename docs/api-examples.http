@@ -1,0 +1,69 @@
+@baseUrl = http://localhost:8000
+
+### Health check
+GET {{baseUrl}}/health
+
+### FR-01: katalog produk
+GET {{baseUrl}}/api/products
+
+### FR-02/FR-03/UC-03: pelanggan membuat pesanan, estimasi stok tetap dicatat walau kurang
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+X-Role: pelanggan
+
+{
+  "customer_name": "Pak Yusuf",
+  "customer_contact": "08129990000",
+  "order_type": "bulk",
+  "needed_at": "2026-07-26",
+  "note": "Untuk acara keluarga",
+  "items": [
+    {
+      "product_id": "22222222-2222-2222-2222-222222222222",
+      "quantity": 20
+    }
+  ]
+}
+
+### FR-04: admin melihat daftar pesanan
+GET {{baseUrl}}/api/orders
+X-Role: admin
+
+### FR-05/BR-07: admin konfirmasi dulu
+PATCH {{baseUrl}}/api/orders/{{orderId}}/status
+Content-Type: application/json
+X-Role: admin
+
+{
+  "status": "dikonfirmasi"
+}
+
+### FR-08/FR-12/UC-11: pindah ke diproses memvalidasi dan mengurangi stok otomatis
+PATCH {{baseUrl}}/api/orders/{{orderId}}/status
+Content-Type: application/json
+X-Role: admin
+
+{
+  "status": "diproses"
+}
+
+### FR-10/FR-11: restock manual
+POST {{baseUrl}}/api/stock/adjustments
+Content-Type: application/json
+X-Role: admin
+
+{
+  "ingredient_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "kind": "masuk",
+  "quantity": "1000",
+  "note": "Restock tepung dari supplier lokal"
+}
+
+### FR-13/FR-16: stok kritis
+GET {{baseUrl}}/api/stock/critical
+X-Role: admin
+
+### FR-14: riwayat pergerakan stok
+GET {{baseUrl}}/api/stock/movements
+X-Role: admin
+

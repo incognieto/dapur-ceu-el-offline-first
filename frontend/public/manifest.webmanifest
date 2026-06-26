@@ -1,0 +1,10 @@
+{
+  "name": "Dapur Ceu El",
+  "short_name": "Ceu El",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f2e8",
+  "theme_color": "#c96f3d",
+  "icons": []
+}
+

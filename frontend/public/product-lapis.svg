@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Kue lapis">
+  <rect width="960" height="540" fill="#f6d9c5"/>
+  <rect x="0" y="332" width="960" height="208" fill="#b98564"/>
+  <path d="M250 190h460l42 170H208z" fill="#f9f0df"/>
+  <path d="M242 224h476" stroke="#b95f42" stroke-width="28"/>
+  <path d="M230 278h500" stroke="#e6b85f" stroke-width="28"/>
+  <path d="M219 333h522" stroke="#8f5a39" stroke-width="28"/>
+  <ellipse cx="480" cy="374" rx="300" ry="42" fill="#7b533c" opacity=".28"/>
+  <text x="480" y="475" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#553c28">Kue Lapis</text>
+</svg>
+
