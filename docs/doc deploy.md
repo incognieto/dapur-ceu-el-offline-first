@@ -32,13 +32,14 @@ Berikut adalah panduan *deploy* dengan skema: **Frontend di Vercel**, **Database
 Meskipun Vercel bisa menjalankan Python, Render jauh lebih cocok untuk FastAPI karena berjalan sebagai layanan utuh, bukan *serverless* yang sering mengalami *cold-start*.
 1. Buka [render.com](https://render.com/) dan *Sign In* dengan GitHub.
 2. Pilih **New** -> **Web Service**.
-3. Hubungkan dengan repository GitHub Dapur Ceu El milik Anda.
-4. Konfigurasikan Web Service:
+3. Hubungkan dengan repository GitHub Dapur Ceu El milik Anda (`incognieto/dapur-ceu-el-offline-first`).
+4. Pada form konfigurasi Web Service, pastikan isiannya seperti ini:
    - **Name**: `dapur-ceu-el-backend`
-   - **Root Directory**: `backend` (Sangat penting! Karena backend kita ada di dalam folder `backend`).
-   - **Runtime**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Language**: `Docker` (Render biasanya mendeteksi ini secara otomatis)
+   - **Root Directory**: `backend` (Sangat penting! Ketikkan "backend" di sini)
+   - **Instance Type**: Pilih `Free`
+   - Gulir ke bawah pada bagian **Docker Build Context Directory**, biarkan terisi `.`
+   - Pada bagian **Dockerfile Path**, biarkan terisi `./Dockerfile` atau `.`
 5. Buka bagian **Environment Variables** di Render dan tambahkan:
    - `DATABASE_URL` = *(Masukkan Connection String dari Neon.tech di Tahap 1)*
    - `CORS_ORIGINS` = `*` *(Untuk sementara agar frontend bisa terkoneksi)*
