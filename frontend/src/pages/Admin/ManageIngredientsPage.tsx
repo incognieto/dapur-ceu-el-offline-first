@@ -26,7 +26,7 @@ export function ManageIngredientsPage() {
         return;
       }
       try {
-        await api.adjustStock({ ingredient_id: id, kind: 'keluar', quantity: qty, note: 'Dihapus manual' });
+        await api.adjustStock({ ingredient_id: id, kind: 'keluar', quantity: qty.toString(), note: 'Dihapus manual' });
         await sync.pull();
       } catch (err: any) {
         alert(err.message || 'Gagal mengurangi stok');
