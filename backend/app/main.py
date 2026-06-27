@@ -12,6 +12,9 @@ from app.modules.orders import models as order_models  # noqa: F401
 from app.modules.stock import models as stock_models  # noqa: F401
 from app.modules.users import models as user_models  # noqa: F401
 
+from app.core.database import Base, engine
+Base.metadata.create_all(bind=engine)
+
 settings = get_settings()
 
 app = FastAPI(
