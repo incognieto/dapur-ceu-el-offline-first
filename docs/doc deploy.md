@@ -10,8 +10,8 @@ Kombinasi ini sangat disukai oleh *developer* modern karena Anda bisa mendeploy 
 1. Buka [supabase.com](https://supabase.com/) dan buat proyek baru (New Project).
 2. Masukkan nama proyek dan buat *Database Password* yang kuat. Tunggu beberapa menit hingga database siap.
 3. Buka menu **Project Settings** (ikon gerigi) -> **Database**.
-4. Gulir ke bawah ke bagian **Connection string** dan pilih tab **URI**.
-5. Copy URL tersebut (jangan lupa ganti bagian `[YOUR-PASSWORD]` dengan password yang Anda buat di langkah 2). Simpan URL ini.
+4. Gulir ke bawah ke bagian **Connection string** dan pastikan Anda memilih **Session pooler** (penting karena Railway membutuhkan IPv4).
+5. Copy URL tersebut pada tab **URI** (jangan lupa ganti bagian `[YOUR-PASSWORD]` dengan password yang Anda buat di langkah 2). Simpan URL ini.
 
 ### Tahap 2: Deploy Backend FastAPI (via Railway)
 1. Buka [railway.app](https://railway.app/) dan *Login* menggunakan akun GitHub.
@@ -24,12 +24,14 @@ Kombinasi ini sangat disukai oleh *developer* modern karena Anda bisa mendeploy 
    - Cari bagian **Root Directory** dan ubah nilainya menjadi `/backend` (agar Railway mengeksekusi folder backend).
    - Gulir ke bawah ke bagian **Networking** dan klik **Generate Domain** agar API Backend Anda memiliki URL publik (misalnya: `https://dapur-backend-xxx.up.railway.app`). Simpan URL ini.
 
-### Tahap 3: Inisialisasi Database (via Supabase SQL Editor)
-Supabase sangat memudahkan inisialisasi karena memiliki SQL Editor bawaan di *browser*.
+### Tahap 3: Inisialisasi Data Dummy (via Supabase SQL Editor)
+*Catatan: Anda tidak perlu membuat tabel secara manual karena Backend FastAPI sudah diprogram untuk membuat tabel secara otomatis (Auto-Create) saat pertama kali dijalankan di Railway.*
+
+Supabase memiliki SQL Editor bawaan untuk memasukkan data awal/dummy:
 1. Di Dashboard Supabase Anda, masuk ke menu **SQL Editor** (ikon terminal/kode di *sidebar* kiri).
 2. Klik **New Query**.
-3. Buka file `db/init/01_schema.sql` dari komputer Anda, *copy* seluruh isinya, *paste* ke SQL Editor Supabase, lalu klik tombol **Run**. (File ini sudah mencakup pembuatan tabel sekaligus pengisian data *dummy*/awal).
-4. Tabel dan data *dummy* Anda kini sudah berhasil dimasukkan ke Cloud Database!
+3. Buka file `db/init/01_schema.sql` dari komputer Anda. Anda hanya perlu menyalin (copy) bagian **INSERT INTO** saja (jangan copy bagian `CREATE TABLE` karena tabel sudah ada), *paste* ke SQL Editor Supabase, lalu klik tombol **Run**.
+4. Data *dummy* Anda kini sudah berhasil dimasukkan ke Cloud Database!
 
 ### Tahap 4: Deploy Frontend React/Vite (via Railway)
 1. Kembali ke layar utama *Project* Anda di Railway (tetap di proyek yang sama, jangan buat proyek baru).
