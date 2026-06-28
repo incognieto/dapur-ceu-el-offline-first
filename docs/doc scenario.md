@@ -106,12 +106,22 @@ Dokumen ini berisi 18 skenario pengujian spesifik, di mana setiap skenario diran
 - **Hasil yang Diharapkan**: Muncul *alert* notifikasi kepada Admin bahwa stok "Telur" telah berada di bawah batas minimum dan perlu segera di-restock.
 
 ### Skenario FR-14: Riwayat Pergerakan Stok
-- **Kebutuhan**: Sistem menampilkan riwayat pergerakan stok (masuk/keluar) bahan baku.
+- **Kebutuhan**: Sistem menampilkan riwayat pergerakan stok (masuk/keluar) bahan baku secara terperinci untuk keperluan audit dan pelacakan.
+- **Kondisi Awal**: 
+  - Admin memiliki akses ke sistem.
+  - Terdapat bahan baku "Tepung Terigu" dengan stok awal 50 kg.
+  - Terdapat pesanan pelanggan dengan status "Menunggu Konfirmasi" yang membutuhkan 5 kg "Tepung Terigu".
 - **Langkah**:
-  1. Login sebagai Admin.
-  2. Lakukan satu penambahan stok manual, lalu konfirmasi satu pesanan untuk memicu pengurangan otomatis.
-  3. Buka endpoint riwayat pergerakan stok (contoh `GET /api/stock/movements`).
-- **Hasil yang Diharapkan**: Tersedia data JSON/tabel (Audit Log) yang merekam histori perubahan stok (seperti: "Masuk 10 kg secara manual", "Keluar otomatis 3 kg untuk Pesanan #123").
+  1. **[Langkah 1 - Penambahan Manual]**: Login sebagai Admin/Staf Produksi, navigasi ke halaman "Manajemen Stok". Lakukan penambahan stok manual (Stock In) untuk "Tepung Terigu" sebanyak 20 kg dengan catatan "Restock Mingguan".
+  2. **[Langkah 2 - Pengurangan Otomatis]**: Navigasi ke halaman "Pesanan", lalu ubah status pesanan pelanggan dari "Menunggu Konfirmasi" menjadi "Diproses". Hal ini akan memicu sistem mengurangi stok bahan baku secara otomatis (Stock Out).
+  3. **[Langkah 3 - Pengurangan Manual]**: Kembali ke halaman "Manajemen Stok", lakukan pengurangan stok manual (Stock Out) untuk "Tepung Terigu" sebanyak 2 kg dengan alasan "Bahan rusak/tumpah".
+  4. **[Langkah 4 - Cek Riwayat]**: Navigasi ke halaman "Riwayat Stok" (atau panggil endpoint `GET /api/stock/movements`). Lakukan filter riwayat pergerakan khusus untuk bahan baku "Tepung Terigu" pada hari ini.
+- **Hasil yang Diharapkan**: 
+  - Sistem menampilkan log/riwayat secara kronologis yang mencakup minimal:
+    - Log 1 (Langkah 3): Keluar 2 kg, Tipe: Pengurangan Manual, Keterangan: "Bahan rusak/tumpah", Timestamp, Aktor: Admin.
+    - Log 2 (Langkah 2): Keluar 5 kg, Tipe: Otomatis, Keterangan: "Penggunaan untuk Pesanan #XXX", Timestamp, Aktor: System/Admin.
+    - Log 3 (Langkah 1): Masuk 20 kg, Tipe: Penambahan Manual, Keterangan: "Restock Mingguan", Timestamp, Aktor: Admin.
+  - Setiap log memiliki referensi yang jelas (contoh: ID Pesanan atau ID User).
 
 ### Skenario FR-15: Pengelolaan Resep / BOM
 - **Kebutuhan**: Admin dapat mengelola data resep/BOM (komposisi bahan baku per produk).
@@ -136,8 +146,18 @@ Dokumen ini berisi 18 skenario pengujian spesifik, di mana setiap skenario diran
 - **Hasil yang Diharapkan**: Sistem mencegah Pelanggan mengakses rute `/admin`, melindungi halaman tersebut, dan mengembalikan/mengalihkan Pelanggan ke dasbor miliknya (`/pelanggan`), membuktikan proteksi otorisasi berfungsi.
 
 ### Skenario FR-18: Akses Melalui Aplikasi Mobile (PWA / Responsif)
-- **Kebutuhan**: Sistem dapat diakses melalui aplikasi mobile (Android).
+- **Kebutuhan**: Sistem dapat diakses melalui perangkat mobile (Android) dengan baik, mendukung kapabilitas PWA (Progressive Web App) termasuk instalasi mandiri dan fungsionalitas *offline-first* dasar.
+- **Kondisi Awal**: 
+  - Pengguna menggunakan perangkat mobile Android (atau simulator/Developer Tools mode mobile).
+  - Aplikasi web telah di-*deploy* ke server dengan HTTPS atau diakses secara lokal.
 - **Langkah**:
-  1. Buka aplikasi web melalui browser *smartphone* (atau menggunakan *Developer Tools* mode *mobile/responsive* di Chrome desktop).
-  2. Lakukan navigasi dan buka menu-menu yang ada.
-- **Hasil yang Diharapkan**: Antarmuka sistem secara otomatis menyesuaikan diri dengan lebar layar ponsel (responsif/PWA), menu dapat ditekan dengan baik via sentuhan, dan seluruh fungsionalitas aplikasi web berjalan mulus tanpa masalah layout yang hancur.
+  1. **[Langkah 1 - Akses dan Responsivitas]**: Buka aplikasi melalui browser (contoh: Chrome) di perangkat mobile Android. Amati ukuran teks, tombol, dan tata letak menu navigasi (contoh: apakah *sidebar* berubah menjadi *hamburger menu* atau *bottom navigation bar*).
+  2. **[Langkah 2 - Instalasi PWA]**: Cari opsi "Add to Home Screen" atau pop-up penawaran instalasi (A2HS). Setujui instalasi aplikasi ke layar utama (Home Screen) Android.
+  3. **[Langkah 3 - Mode Standalone]**: Tutup browser, lalu buka aplikasi melalui ikon yang baru saja terinstal di Home Screen Android. Amati tampilan apakah layar penuh (*standalone mode*) tanpa *address bar* browser.
+  4. **[Langkah 4 - Navigasi dan Sentuhan]**: Lakukan aktivitas operasional dasar via *touch screen*: klik pesanan, geser (swipe) daftar pesanan, dan isi *form* pembuatan pesanan menggunakan *keyboard virtual* ponsel.
+  5. **[Langkah 5 - Uji Offline Dasar]**: Matikan koneksi internet (Airplane mode), lalu *refresh* halaman aplikasi atau pindah ke halaman lain yang sudah pernah diakses.
+- **Hasil yang Diharapkan**:
+  - UI 100% responsif; tidak ada elemen UI yang saling tumpang tindih atau mengharuskan *scroll* horizontal secara tidak wajar. Tombol *touch-friendly*.
+  - Aplikasi berhasil diinstal sebagai PWA di Home Screen Android dengan ikon yang benar (menggunakan Web Manifest).
+  - Saat dibuka dari Home Screen, aplikasi tampil persis seperti aplikasi native (mode standalone).
+  - Saat mode *offline*, aplikasi tidak menampilkan layar "No Internet / Dinosaurus", melainkan tetap memuat *shell* aplikasi dari *cache* Service Worker (menampilkan status "Offline" pada UI).

@@ -73,3 +73,13 @@ export type StockAdjustmentPayload = {
   note?: string;
 };
 
+
+export type StockMovement = {
+  id: string;
+  ingredient_name: string;
+  kind: 'masuk' | 'keluar' | 'koreksi';
+  quantity: string;
+  unit: string;
+  note?: string;
+  created_at: string;
+};

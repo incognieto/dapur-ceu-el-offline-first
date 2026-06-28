@@ -12,6 +12,7 @@ import { StafStockPage } from './pages/Staf/StafStockPage';
 import { PelangganLayout } from './pages/Pelanggan/PelangganLayout';
 import { PelangganOrderPage } from './pages/Pelanggan/PelangganOrderPage';
 import { PelangganHistoryPage } from './pages/Pelanggan/PelangganHistoryPage';
+import { StockHistoryPage } from './pages/StockHistoryPage';
 
 function ProtectedRoute({ allowedRoles, children }: { allowedRoles: string[], children: React.ReactNode }) {
   const role = localStorage.getItem('dapur_role');
@@ -40,11 +41,13 @@ export default function App() {
           <Route path="products" element={<ManageProductsPage />} />
           <Route path="ingredients" element={<ManageIngredientsPage />} />
           <Route path="recipes" element={<ManageRecipesPage />} />
+          <Route path="history" element={<StockHistoryPage />} />
         </Route>
 
         <Route path="/staf" element={<ProtectedRoute allowedRoles={['staf_produksi', 'admin']}><StafLayout /></ProtectedRoute>}>
           <Route index element={<StafDashboardPage />} />
           <Route path="stock" element={<StafStockPage />} />
+          <Route path="history" element={<StockHistoryPage />} />
         </Route>
 
         <Route path="/pelanggan" element={<ProtectedRoute allowedRoles={['pelanggan', 'admin']}><PelangganLayout /></ProtectedRoute>}>

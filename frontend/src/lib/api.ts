@@ -1,4 +1,4 @@
-import type { Ingredient, IngredientPayload, Order, OrderPayload, Product, ProductPayload, Recipe, RecipePayload, StockAdjustmentPayload } from './types';
+import type { Ingredient, IngredientPayload, Order, OrderPayload, Product, ProductPayload, Recipe, RecipePayload, StockAdjustmentPayload, StockMovement } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
@@ -54,6 +54,8 @@ export const api = {
     request<Order>(`/api/orders/${orderId}/status`, { method: 'PATCH', body: JSON.stringify({ status, reason }) }),
   
   adjustStock: (payload: StockAdjustmentPayload) =>
-    request('/api/stock/adjustments', { method: 'POST', body: JSON.stringify(payload) })
+    request('/api/stock/adjustments', { method: 'POST', body: JSON.stringify(payload) }),
+  
+  stockMovements: () => request<StockMovement[]>('/api/stock/movements')
 };
 

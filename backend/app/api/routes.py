@@ -217,7 +217,7 @@ def critical_stock(db: Session = Depends(get_db), _: str = Depends(require_role(
 
 
 @router.get("/stock/movements", response_model=list[StockMovementRead])
-def stock_movements(db: Session = Depends(get_db), _: str = Depends(require_role("admin"))):
+def stock_movements(db: Session = Depends(get_db), _: str = Depends(require_role("staf_produksi"))):
     return [
         StockMovementRead(
             id=movement.id,
