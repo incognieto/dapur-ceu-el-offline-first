@@ -1,4 +1,5 @@
-import { Check, ChefHat, PackageCheck, X } from 'lucide-react';
+import { Check, ChefHat, PackageCheck, X, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Order } from '../lib/types';
 
@@ -14,11 +15,26 @@ const nextActions: Record<string, Array<{ status: string; label: string; icon: R
 
 type Props = {
   orders: Order[];
-  onUpdateStatus: (orderId: string, status: string) => Promise<void>;
+  onUpdateStatus: (orderId: string, status: string, reason?: string) => Promise<void>;
   isCustomer?: boolean;
 };
 
 export function OrdersPanel({ orders, onUpdateStatus, isCustomer = false }: Props) {
+  const [errorOrder, setErrorOrder] = useState<string | null>(null);
+
+  const handleUpdate = async (orderId: string, status: string, reason?: string) => {
+    try {
+      await onUpdateStatus(orderId, status, reason);
+      setErrorOrder(null);
+    } catch (err: any) {
+      if (err.message && err.message.includes('Stok tidak cukup')) {
+        setErrorOrder(orderId);
+      } else {
+        alert(err.message || 'Gagal mengubah status pesanan');
+      }
+    }
+  };
+
   return (
     <section className="panel">
       <div className="panel-heading">
@@ -47,11 +63,26 @@ export function OrdersPanel({ orders, onUpdateStatus, isCustomer = false }: Prop
               {(nextActions[order.status] ?? [])
                 .filter((action) => !isCustomer || action.status === 'dibatalkan')
                 .map((action) => (
-                <button key={action.status} type="button" onClick={() => onUpdateStatus(order.id, action.status)}>
+                <button key={action.status} type="button" onClick={() => handleUpdate(order.id, action.status)}>
                   {action.icon}
                   {action.label}
                 </button>
               ))}
+              {errorOrder === order.id && !isCustomer && (
+                <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#ffebee', padding: '0.5rem', borderRadius: '4px', color: '#c62828' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                    <AlertTriangle size={16} /> Stok bahan baku tidak memadai!
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => handleUpdate(order.id, 'dibatalkan', 'pesanan melebihi stok bahan baku')}
+                    style={{ background: '#d32f2f', color: 'white', padding: '0.25rem 0.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', alignSelf: 'flex-start' }}
+                  >
+                    <X size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}/>
+                    Tolak Pesanan
+                  </button>
+                </div>
+              )}
             </div>
           </article>
         ))}

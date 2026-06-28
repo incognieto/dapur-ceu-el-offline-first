@@ -42,7 +42,7 @@ class OrderService:
         self.event_bus.publish(DomainEvent("order.created", {"customer_name": order.customer_name}))
         return order
 
-    def update_status(self, order_id: UUID, next_status: str) -> Order:
+    def update_status(self, order_id: UUID, next_status: str, reason: str | None = None) -> Order:
         order = self.orders.get_with_items(str(order_id))
         if order is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesanan tidak ditemukan.")
@@ -55,7 +55,7 @@ class OrderService:
         self.event_bus.publish(
             DomainEvent(
                 "order.status_changed",
-                {"order_id": str(order.id), "status": next_status, "customer_name": order.customer_name},
+                {"order_id": str(order.id), "status": next_status, "customer_name": order.customer_name, "reason": reason},
             )
         )
         return order

@@ -9,12 +9,16 @@ class NotificationService:
 
     def handle_event(self, event: DomainEvent) -> None:
         if event.name == "order.status_changed":
+            msg = f"Status pesanan {event.payload['order_id']} berubah menjadi {event.payload['status']}."
+            if event.payload.get("status") == "dibatalkan" and event.payload.get("reason"):
+                msg += f" Alasan: {event.payload['reason']}"
+
             self.repo.add(
                 Notification(
                     recipient_role="pelanggan",
                     recipient_name=event.payload.get("customer_name"),
                     type="status_pesanan",
-                    message=f"Status pesanan {event.payload['order_id']} berubah menjadi {event.payload['status']}.",
+                    message=msg,
                 )
             )
             if event.payload.get("status") == "dibatalkan":
@@ -59,7 +63,8 @@ class NotificationService:
                 )
             )
         if event.name == "stock.restocked":
-            msg = f"Barang {event.payload['ingredient_name']} telah terestock dengan kuantitas {event.payload['quantity']} ({event.payload['unit']})"
+            actor = event.payload.get("actor", "Seseorang")
+            msg = f"{actor} merestock bahan baku {event.payload['ingredient_name']} sebanyak {event.payload['quantity']} {event.payload['unit']}"
             self.repo.add(
                 Notification(
                     recipient_role="admin",
@@ -73,6 +78,25 @@ class NotificationService:
                     recipient_role="staf_produksi",
                     recipient_name="",
                     type="stok_restock",
+                    message=msg,
+                )
+            )
+        if event.name == "stock.adjusted":
+            actor = event.payload.get("actor", "Seseorang")
+            msg = f"{actor} {event.payload['kind']} stok bahan baku {event.payload['ingredient_name']} sebanyak {event.payload['quantity']} {event.payload['unit']}"
+            self.repo.add(
+                Notification(
+                    recipient_role="admin",
+                    recipient_name="",
+                    type="stok_adjusted",
+                    message=msg,
+                )
+            )
+            self.repo.add(
+                Notification(
+                    recipient_role="staf_produksi",
+                    recipient_name="",
+                    type="stok_adjusted",
                     message=msg,
                 )
             )

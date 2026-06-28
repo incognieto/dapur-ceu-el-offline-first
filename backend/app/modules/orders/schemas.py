@@ -63,6 +63,7 @@ class OrderRead(BaseModel):
 
 class StatusUpdate(BaseModel):
     status: str = Field(pattern="^(dikonfirmasi|diproses|siap_diambil|selesai|dibatalkan)$")
+    reason: str | None = None
 
 
 class StockAdjustmentCreate(BaseModel):

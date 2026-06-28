@@ -16,6 +16,7 @@ def build_services(db: Session) -> tuple[OrderService, StockService]:
     event_bus.subscribe("order.status_changed", notifications.handle_event)
     event_bus.subscribe("stock.critical", notifications.handle_event)
     event_bus.subscribe("stock.restocked", notifications.handle_event)
+    event_bus.subscribe("stock.adjusted", notifications.handle_event)
 
     stock_service = StockService(
         ingredients=IngredientRepository(db),

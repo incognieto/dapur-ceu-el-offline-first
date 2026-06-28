@@ -123,7 +123,7 @@ class StockService:
                     )
                 )
 
-    def adjust_stock(self, ingredient_id: UUID, kind: str, quantity: Decimal, note: str | None = None) -> StockMovement:
+    def adjust_stock(self, ingredient_id: UUID, kind: str, quantity: Decimal, note: str | None = None, actor: str = "Admin", actor_role: str = "admin") -> StockMovement:
         ingredient = self.ingredients.lock_many([str(ingredient_id)])[0]
         if kind == "masuk":
             ingredient.stock_current += quantity
@@ -134,6 +134,8 @@ class StockService:
                         "ingredient_name": ingredient.name,
                         "quantity": str(quantity),
                         "unit": ingredient.unit,
+                        "actor": actor,
+                        "actor_role": actor_role,
                     },
                 )
             )
@@ -141,6 +143,19 @@ class StockService:
             if ingredient.stock_current < quantity:
                 raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Stok tidak cukup untuk dikurangi.")
             ingredient.stock_current -= quantity
+            self.event_bus.publish(
+                DomainEvent(
+                    "stock.adjusted",
+                    {
+                        "ingredient_name": ingredient.name,
+                        "kind": "dikurangi",
+                        "quantity": str(quantity),
+                        "unit": ingredient.unit,
+                        "actor": actor,
+                        "actor_role": actor_role,
+                    },
+                )
+            )
         elif kind == "koreksi":
             ingredient.stock_current = quantity
 

@@ -104,10 +104,30 @@ def list_ingredients(db: Session = Depends(get_db), _: str = Depends(require_rol
 
 
 @router.post("/ingredients", response_model=IngredientRead, status_code=201)
-def create_ingredient(payload: IngredientCreate, db: Session = Depends(get_db), _: str = Depends(require_role("admin"))):
+def create_ingredient(
+    payload: IngredientCreate, 
+    db: Session = Depends(get_db), 
+    x_username: str = Header(default="Admin", alias="X-Username"),
+    _: str = Depends(require_role("admin"))
+):
     repo = IngredientRepository(db)
+    
+    # Validation for duplicate
+    from sqlalchemy import func
+    existing = db.query(Ingredient).filter(func.lower(Ingredient.name) == payload.name.lower()).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Bahan Baku sudah ditambahkan")
+        
     ingredient = Ingredient(**payload.model_dump())
     repo.add(ingredient)
+    
+    # Send notification
+    notif_repo = NotificationRepository(db)
+    from app.modules.notifications.models import Notification
+    msg = f"{x_username} menambahkan bahan baku {ingredient.name}"
+    notif_repo.add(Notification(recipient_role="admin", type="kelola_bahan_baku", message=msg))
+    notif_repo.add(Notification(recipient_role="staf_produksi", type="kelola_bahan_baku", message=msg))
+    
     db.commit()
     db.refresh(ingredient)
     return ingredient
@@ -127,11 +147,24 @@ def update_ingredient(ingredient_id: UUID, payload: IngredientUpdate, db: Sessio
 
 
 @router.delete("/ingredients/{ingredient_id}", status_code=204)
-def delete_ingredient(ingredient_id: UUID, db: Session = Depends(get_db), _: str = Depends(require_role("admin"))):
+def delete_ingredient(
+    ingredient_id: UUID, 
+    db: Session = Depends(get_db), 
+    x_username: str = Header(default="Admin", alias="X-Username"),
+    _: str = Depends(require_role("admin"))
+):
     repo = IngredientRepository(db)
     ingredient = repo.get(str(ingredient_id))
     if not ingredient:
         raise HTTPException(status_code=404, detail="Bahan baku tidak ditemukan")
+        
+    # Send notification
+    notif_repo = NotificationRepository(db)
+    from app.modules.notifications.models import Notification
+    msg = f"{x_username} menghapus bahan baku {ingredient.name}"
+    notif_repo.add(Notification(recipient_role="admin", type="kelola_bahan_baku", message=msg))
+    notif_repo.add(Notification(recipient_role="staf_produksi", type="kelola_bahan_baku", message=msg))
+    
     repo.delete(ingredient)
     db.commit()
 
@@ -199,9 +232,15 @@ def stock_movements(db: Session = Depends(get_db), _: str = Depends(require_role
 
 
 @router.post("/stock/adjustments", response_model=StockMovementRead)
-def adjust_stock(payload: StockAdjustmentCreate, db: Session = Depends(get_db), _: str = Depends(require_role("staf_produksi"))):
+def adjust_stock(
+    payload: StockAdjustmentCreate, 
+    db: Session = Depends(get_db), 
+    x_username: str = Header(default="Admin", alias="X-Username"),
+    x_role: str = Header(default="admin", alias="X-Role"),
+    _: str = Depends(require_role("staf_produksi"))
+):
     _, stock_service = build_services(db)
-    movement = stock_service.adjust_stock(payload.ingredient_id, payload.kind, payload.quantity, payload.note)
+    movement = stock_service.adjust_stock(payload.ingredient_id, payload.kind, payload.quantity, payload.note, x_username, x_role)
     db.commit()
     db.refresh(movement)
     return StockMovementRead(
@@ -262,7 +301,7 @@ def update_order_status(
         if order_to_check and order_to_check.customer_name.lower() != x_username.lower():
             raise HTTPException(status_code=403, detail="Hanya bisa membatalkan pesanan sendiri.")
     order_service, _ = build_services(db)
-    order = order_service.update_status(order_id, payload.status)
+    order = order_service.update_status(order_id, payload.status, payload.reason)
     db.commit()
     db.refresh(order)
     order = OrderRepository(db).get_with_items(str(order.id))

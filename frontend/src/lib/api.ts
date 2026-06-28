@@ -50,8 +50,8 @@ export const api = {
   
   orders: () => request<Order[]>('/api/orders'),
   createOrder: (payload: OrderPayload) => request<Order>('/api/orders', { method: 'POST', body: JSON.stringify(payload) }),
-  updateOrderStatus: (orderId: string, status: string) =>
-    request<Order>(`/api/orders/${orderId}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  updateOrderStatus: (orderId: string, status: string, reason?: string) =>
+    request<Order>(`/api/orders/${orderId}/status`, { method: 'PATCH', body: JSON.stringify({ status, reason }) }),
   
   adjustStock: (payload: StockAdjustmentPayload) =>
     request('/api/stock/adjustments', { method: 'POST', body: JSON.stringify(payload) })

@@ -57,6 +57,27 @@ export function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getNotificationStyle = (n: Notification) => {
+    let bg = 'white';
+    let borderLeft = '4px solid var(--color-border, #e5e7eb)';
+    
+    if (n.type === 'stok_minimum' || n.type === 'pesanan_dibatalkan' || (n.type === 'kelola_bahan_baku' && n.message.includes('menghapus'))) {
+      bg = '#ffebee';
+      borderLeft = '4px solid #f44336'; // Red
+    } else if (n.type === 'stok_adjusted' || (n.type === 'status_pesanan' && n.message.includes('dibatalkan'))) {
+      bg = '#fff8e1';
+      borderLeft = '4px solid #ff9800'; // Yellow
+    } else if (n.type === 'stok_restock' || n.type === 'pesanan_baru' || (n.type === 'kelola_bahan_baku' && n.message.includes('menambahkan'))) {
+      bg = '#e8f5e9';
+      borderLeft = '4px solid #4caf50'; // Green
+    } else {
+      bg = '#f3e8ff';
+      borderLeft = '4px solid #a855f7'; // Purple default
+    }
+    
+    return { background: bg, borderLeft };
+  };
+
   return (
     <div className="notification-bell-container" ref={dropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       <button 
@@ -88,14 +109,17 @@ export function NotificationBell() {
             {notifications.length === 0 ? (
               <div style={{ padding: '15px', textAlign: 'center', color: 'var(--color-text-muted, #6b7280)' }}>Belum ada notifikasi baru</div>
             ) : (
-              notifications.map(n => (
-                <div key={n.id} style={{ padding: '10px 15px', borderBottom: '1px solid var(--color-border, #e5e7eb)' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#333' }}>{n.message}</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted, #6b7280)', marginTop: '4px' }}>
-                    {new Date(n.created_at).toLocaleString('id-ID')}
+              notifications.map(n => {
+                const style = getNotificationStyle(n);
+                return (
+                  <div key={n.id} style={{ padding: '10px 15px', borderBottom: '1px solid var(--color-border, #e5e7eb)', background: style.background, borderLeft: style.borderLeft }}>
+                    <div style={{ fontSize: '0.85rem', color: '#333' }}>{n.message}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted, #6b7280)', marginTop: '4px' }}>
+                      {new Date(n.created_at).toLocaleString('id-ID')}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

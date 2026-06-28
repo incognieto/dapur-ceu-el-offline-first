@@ -18,9 +18,16 @@ export function useOfflineSync() {
       localDb.orders.reverse().sortBy('created_at'),
       localDb.outbox.count()
     ]);
+    let filteredOrders = cachedOrders;
+    const role = localStorage.getItem('dapur_role');
+    const username = localStorage.getItem('dapur_username');
+    if (role === 'pelanggan' && username) {
+      filteredOrders = cachedOrders.filter(o => o.customer_name.toLowerCase() === username.toLowerCase());
+    }
+    
     setProducts(cachedProducts);
     setIngredients(cachedIngredients);
-    setOrders(cachedOrders);
+    setOrders(filteredOrders);
     setPendingCount(pending);
   }, []);
 
@@ -85,8 +92,8 @@ export function useOfflineSync() {
   );
 
   const updateStatus = useCallback(
-    async (orderId: string, status: string) => {
-      const updated = await api.updateOrderStatus(orderId, status);
+    async (orderId: string, status: string, reason?: string) => {
+      const updated = await api.updateOrderStatus(orderId, status, reason);
       await localDb.orders.put(updated);
       await pull();
     },
